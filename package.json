@@ -1,0 +1,29 @@
+{
+  "name": "goit-node-hw-01-contacts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index",
+    "start:dev": "nodemon index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HPavlova/goit-node-hw-01-contacts.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HPavlova/goit-node-hw-01-contacts/issues"
+  },
+  "homepage": "https://github.com/HPavlova/goit-node-hw-01-contacts#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  },
+  "dependencies": {
+    "shortid": "^2.2.16",
+    "yargs": "^17.3.0"
+  }
+}
