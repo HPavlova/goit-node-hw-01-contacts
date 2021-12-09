@@ -1,32 +1,9 @@
-const fs = require("fs").promises;
-const path = require("path");
 const shortid = require("shortid");
 
+const parsedContacts = require("./db/parsedContacts");
+const updateContacts = require("./db/updateContacts");
+
 const PORT = 8080;
-
-const contactsPath = path.resolve("./db/contacts.json");
-
-async function parsedContacts() {
-  try {
-    const data = await fs.readFile(contactsPath, "utf8");
-    return JSON.parse(data);
-  } catch (error) {
-    return console.error(error.message);
-  }
-}
-
-async function writtenContacts() {
-  try {
-    const data = await fs.writeFile(
-      contactsPath,
-      JSON.stringify(newContacts, null, "\t"),
-      "utf8"
-    );
-    return data;
-  } catch (error) {
-    return console.error(error.message);
-  }
-}
 
 async function listContacts() {
   const contacts = await parsedContacts();
@@ -39,9 +16,9 @@ async function listContacts() {
 }
 
 async function getContactById(contactId) {
-  const contacts = await parsedContacts();
   try {
-    const contact = contacts.find((id) => (id = contactId));
+    const contacts = await parsedContacts();
+    const contact = contacts.find(({ id }) => id == contactId);
     if (!contact) {
       return console.error(`Contact with ID ${contactId} not found!`);
     }
@@ -53,14 +30,18 @@ async function getContactById(contactId) {
 }
 
 async function removeContact(contactId) {
-  const contacts = await parsedContacts();
   try {
-    const newContacts = contacts.filter((id) => id !== contactId);
+    const contacts = await parsedContacts();
+    const newContacts = contacts.filter(({ id }) => id !== `${contactId}`);
+
     if (contacts.length === newContacts.length) {
       return console.error(`Contact with ID ${contactId} not found!`);
     }
-    writtenContacts();
-    console.table(contacts);
+
+    await updateContacts(newContacts);
+
+    console.table(newContacts);
+
     return newContacts;
   } catch (error) {
     return console.error(error.message);
@@ -68,8 +49,8 @@ async function removeContact(contactId) {
 }
 
 async function addContact(name, email, phone) {
-  const contacts = await parsedContacts();
   try {
+    const contacts = await parsedContacts();
     if (
       contacts.find(
         (contact) => contact.name.toLowerCase() === name.toLowerCase()
@@ -95,10 +76,10 @@ async function addContact(name, email, phone) {
     }
 
     const newContact = { id: shortid.generate(), name, email, phone };
-    const newContacts = [...contacts, newContact];
-    writtenContacts();
+    contacts.push(newContact);
+    await updateContacts(contacts);
     console.table(contacts);
-    return newContacts;
+    return contacts;
   } catch (error) {
     return console.error(error.message);
   }
